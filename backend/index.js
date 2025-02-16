@@ -15,7 +15,9 @@ app.use(cookieParser());
 app.use(cors());
 
 import userRoutes from "./routes/user.routes.js";
+import messageRoutes from "./routes/message.routes.js";
 app.use("/api/v1", userRoutes);
+app.use("/api/v1/messages", messageRoutes);
 
 
 

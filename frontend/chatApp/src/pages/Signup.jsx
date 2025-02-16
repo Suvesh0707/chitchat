@@ -28,16 +28,17 @@ function Signup() {
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-900">
-      <div className="border border-gray-700 rounded-lg shadow-lg p-10 bg-gray-800 text-white w-96 shadow-lg shadow-primary">
+      <div className="border border-gray-700 rounded-lg p-10 bg-gray-800 text-white w-96 shadow-lg shadow-primary">
         <h2 className="text-3xl font-semibold text-center mb-6">Signup</h2>
         <form onSubmit={submit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium">Username</label>
             <input 
               type="text" 
-              className="w-full mt-1 p-3 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
+              className="w-full mt-1 p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
               value={username} 
               onChange={(e) => setUsername(e.target.value)}
+              placeholder='Username'
               required 
             />
           </div>
@@ -45,9 +46,10 @@ function Signup() {
             <label className="block text-sm font-medium">Email</label>
             <input 
               type="email" 
-              className="w-full mt-1 p-3 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
+              className="w-full mt-1 p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
               value={email} 
               onChange={(e) => setEmail(e.target.value)}
+              placeholder='Email'
               required 
             />
           </div>
@@ -55,9 +57,10 @@ function Signup() {
             <label className="block text-sm font-medium">Password</label>
             <input 
               type="password" 
-              className="w-full mt-1 p-3 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
+              className="w-full mt-1 p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
               value={password} 
               onChange={(e) => setPassword(e.target.value)}
+              placeholder='Password'
               required 
             />
           </div>

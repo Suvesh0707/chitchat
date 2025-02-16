@@ -1,25 +1,31 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React from "react";
+import Navbar from "../components/Navbar";
+import { Link } from "react-router-dom";
 
 function Homepage() {
     return (
-        <>
-            <div className='flex justify-between items-center h-16 bg-black text-white '>
-                <div className='w-10 h-10 rounded-full object-cover'><img className="w-10 h-10 rounded-full object-cover ml-3" src="https://i.pinimg.com/736x/a6/8e/fc/a68efcad5debfbe207f52e8c19b379e9.jpg"></img></div>
-               <label className="flex items-center ">ChatApp</label>
-                <div>
-                    <details className="dropdown bg-black">
-                        <summary className="btn bg-black m-1 border-black">Setting</summary>
-                        <ul className="menu dropdown-content  ">
-                            <li><Link to= "/">logout</Link></li>
-                        </ul>
-                    </details>
-                </div>
+        <div className="h-screen bg-gray-900 text-white flex flex-col">
+            <Navbar />
+
+            <div className="flex-1 flex flex-col justify-center items-center text-center p-6">
+                <h1 className="text-4xl font-bold mb-4 text-blue-400">Welcome to ChatApp</h1>
+                <p className="text-gray-300 max-w-md mb-6">
+                    Connect with your friends, chat in real-time, and enjoy a seamless messaging experience.
+                </p>
+                
+                <Link 
+                    to="/chat"
+                    className="relative inline-block px-8 py-3 font-bold text-white rounded-lg
+                               bg-gradient-to-r from-purple-500 to-blue-500 
+                               hover:from-blue-500 hover:to-purple-500
+                               transition-all duration-300 ease-in-out
+                               shadow-lg hover:shadow-blue-500/50 transform hover:scale-105"
+                >
+                    Get Started
+                </Link>
             </div>
-        </>
-
-
-    )
+        </div>
+    );
 }
 
-export default Homepage
+export default Homepage;
