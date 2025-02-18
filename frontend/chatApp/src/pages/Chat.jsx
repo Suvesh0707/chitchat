@@ -1,91 +1,119 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import Navbar from "../components/Navbar";
+import { MessageSquareShare } from "lucide-react";
 
 function Chat() {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [loadingMessages, setLoadingMessages] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedUserName, setSelectedUserName] = useState("");
+    const [messages, setMessages] = useState([]);
+    const [messageInput, setMessageInput] = useState('');
+    const [currentUserId, setCurrentUserId] = useState(null);
+    const [lightMode, setLightMode] = useState(false);
 
-    const toggleSidebar = () => {
-        setIsSidebarOpen(!isSidebarOpen);
-    };
+    useEffect(() => {
+        axios.get("http://localhost:3000/api/v1/currentuser", { withCredentials: true })
+            .then((response) => {
+                if (response.data?.userId) {
+                    setCurrentUserId(response.data.userId);
+                }
+            })
+            .catch((error) => console.error("Error fetching current user ID:", error));
+    }, []);
 
-    const closeSidebar = () => {
-        setIsSidebarOpen(false);
+    useEffect(() => {
+        axios.get("http://localhost:3000/api/v1/usersidebar", { withCredentials: true })
+            .then((response) => {
+                setUsers(response.data.users);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching users:", error);
+                setLoading(false);
+            });
+    }, []);
+
+    useEffect(() => {
+        if (selectedUser) {
+            setLoadingMessages(true);
+            axios.get(`http://localhost:3000/api/v1/messages/${selectedUser}`, { withCredentials: true })
+                .then((response) => {
+                    setMessages(Array.isArray(response.data) ? response.data : []);
+                })
+                .catch((error) => {
+                    console.error("Error fetching messages:", error);
+                    setMessages([]);
+                })
+                .finally(() => setLoadingMessages(false));
+        } else {
+            setMessages([]);
+        }
+    }, [selectedUser]);
+
+    const handleSendMessage = () => {
+        if (messageInput.trim() && selectedUser) {
+            axios.post(`http://localhost:3000/api/v1/messages/send/${selectedUser}`, 
+                { message: messageInput }, { withCredentials: true })
+                .then(() => {
+                    setMessages([...messages, { senderId: currentUserId, message: messageInput }]);
+                    setMessageInput('');
+                })
+                .catch((error) => console.error("Error sending message:", error));
+        }
     };
 
     return (
-        <div className="h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white flex flex-col">
-            <Navbar />
-
-            {/* Main Layout */}
-            <div className="flex flex-1 p-6 gap-6">
-                {/* Sidebar */}
-                <div
-                    className={`fixed top-0 left-0 h-full bg-gray-800 w-64 z-50 transform transition-transform duration-300 ease-in-out ${
-                        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-                    } sm:relative sm:translate-x-0 sm:w-72 border-r border-gray-700 shadow-xl rounded-lg p-4`}
-                >
-                    <button
-                        className="sm:hidden mb-4 text-gray-400 hover:text-white focus:outline-none"
-                        onClick={closeSidebar}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            className="w-6 h-6"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-
-                    <h2 className="text-xl font-bold mb-4 text-blue-400">Chats</h2>
-                    <div className="space-y-3">
-                        {["Suvesh", "Siddesh", "Pranav", "Kirti", "Tanvi"].map((name, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center p-3 bg-gray-700 hover:bg-blue-600 rounded-lg transition text-white shadow-md"
-                            >
-                                <img
-                                    className="w-10 h-10 rounded-full object-cover border border-blue-500"
-                                    src="https://t4.ftcdn.net/jpg/06/59/13/31/360_F_659133125_S0VAnb5NNknokdB47K61zDsczWgZJTMf.jpg"
-                                    alt={`${name} avatar`}
-                                />
-                                <span className="ml-3 text-md font-semibold">{name}</span>
+        <>
+            <Navbar lightMode={lightMode} setLightMode={setLightMode} />
+            <div className={lightMode ? "bg-gray-100 text-black" : "bg-gray-900 text-white"} style={{ height: "calc(100vh - 65px)" }}>
+                <div className="flex flex-1 p-6 gap-6" style={{ height: "100%" }}>
+                    <div className={lightMode ? "bg-white text-black shadow-md" : "bg-gray-800 text-white shadow-lg"} style={{ width: "20%", height: "calc(100vh - 110px)", overflowY: "auto", borderRadius: "8px", padding: "12px" }}>
+                        <h2 className="text-xl font-bold mb-4">Chats</h2>
+                        {loading ? (
+                            <div className="text-center">Loading...</div>
+                        ) : (
+                            users.map((user) => (
+                                <div key={user._id} className={`flex items-center p-3 rounded-lg transition shadow-md cursor-pointer mb-2 hover:bg-blue-400 ${lightMode ? "bg-gray-200 text-black" : "bg-gray-700 text-white"}`} onClick={() => { setSelectedUser(user._id); setSelectedUserName(user.username); }}>
+                                    <div className="w-10 h-10 flex items-center justify-center font-bold text-lg rounded-full shadow-md bg-blue-500 text-white">
+                                        {user.username.charAt(0).toUpperCase()}
+                                    </div>
+                                    <span className="ml-3 text-md font-semibold">{user.username}</span>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                    <div className={lightMode ? "bg-white text-black shadow-md" : "bg-gray-800 text-white shadow-lg"} style={{ flex: 1, height: "100%", padding: "16px" }}>
+                        {selectedUser ? (
+                            <div className="flex flex-col h-full">
+                                <h3 className="text-lg font-bold mb-2 flex gap-2"><MessageSquareShare className="w-8 h-8 text-blue-400" />Chatting with {selectedUserName}</h3>
+                                <div className="flex-grow p-4 space-y-4 rounded-lg overflow-y-auto" style={{ maxHeight: "calc(100% - 80px)", backgroundColor: lightMode ? "#f3f4f6" : "#1f2937", color: lightMode ? "#000" : "#fff" }}>
+                                    {loadingMessages ? (
+                                        <div className="text-center">Loading messages...</div>
+                                    ) : messages.length > 0 ? (
+                                        messages.map((message, index) => (
+                                            <div key={index} className={`chat ${message.senderId === currentUserId ? 'chat-end' : 'chat-start'}`}> 
+                                                <div className={`chat-bubble p-3 rounded-xl max-w-xs shadow-lg ${message.senderId === currentUserId ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}>{message.message}</div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center">No messages yet</div>
+                                    )}
+                                </div>
+                                <div className="flex items-center p-4 border-t mt-2" style={{ borderColor: lightMode ? "#d1d5db" : "#374151" }}>
+                                    <input type="text" value={messageInput} onChange={(e) => setMessageInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} placeholder="Type a message..." className={`flex-grow h-12 px-4 rounded-lg focus:outline-none ${lightMode ? 'bg-gray-300 text-black' : 'bg-gray-700 text-white'}`} />
+                                    <button className="ml-3 px-6 py-2 font-bold rounded-lg shadow-md bg-blue-500 text-white" onClick={handleSendMessage}>Send</button>
+                                </div>
                             </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Chat Section */}
-                <div className="flex-1 flex flex-col p-6 bg-gray-800 rounded-lg shadow-2xl border border-gray-700">
-                    <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-gray-900 rounded-lg text-gray-300 shadow-md">
-                        {/* Messages would be displayed here */}
-                    </div>
-
-                    <div className="flex items-center p-3 mt-3 border-t border-gray-600">
-                        <input
-                            type="text"
-                            placeholder="Type a message..."
-                            className="flex-grow h-12 px-4 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-lg"
-                        />
-                        <button
-                            className="ml-3 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition shadow-lg"
-                        >
-                            Send
-                        </button>
+                        ) : (
+                            <div className="text-center flex items-center justify-center h-full text-xl">Select a user to start chatting</div>
+                        )}
                     </div>
                 </div>
             </div>
-
-            {isSidebarOpen && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-50 z-40 sm:hidden"
-                    onClick={closeSidebar}
-                ></div>
-            )}
-        </div>
+        </>
     );
 }
 

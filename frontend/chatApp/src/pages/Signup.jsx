@@ -17,7 +17,7 @@ function Signup() {
         email,
         password
       }, {
-        headers: { "Content-Type": "application/json" }
+        withCredentials: true,
       });
       console.log("Signup Successful:", response.data);
       navigate("/homepage") // After a successful signup, the user is redirected to the homepage using navigate('/').

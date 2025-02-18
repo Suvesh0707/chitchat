@@ -18,11 +18,12 @@ export const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User ({ username, email, password: hashedPassword });
         await user.save();
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        const token = await jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        console.log(token);
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true,
+            secure: false,
             maxAge: 24*60*60*1000, 
         });
 
@@ -42,12 +43,14 @@ export const loginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: "Invalid email or password" });
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        const token = await jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        console.log(token);
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true,
+            secure: false,
             maxAge: 24*60*60*1000, 
+            sameSite: "strict",
         });
 
         res.status(200).json({ message: "Login successful", user });
@@ -60,10 +63,23 @@ export const logoutUser = async (req, res) => {
     try {
         res.clearCookie("token", {
             httpOnly: true,
-            secure:true,
+            secure:false,
         });
         res.status(200).json({ message: "Logout successful" });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+export const getCurrentUser = (req, res) => {
+    try {
+        const token = req.cookies.token; 
+        if (!token) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        res.json({ userId: decoded.id }); 
+    } catch (error) {
+        res.status(500).json({ message: "Error retrieving user", error: error.message });
     }
 };

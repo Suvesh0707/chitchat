@@ -13,7 +13,7 @@ function Login() {
       const response = await axios.post( 
         "http://localhost:3000/api/v1/login",
         { email, password },
-        { headers: { "Content-Type": "application/json" } }
+        {withCredentials: true}
       );
       console.log("Login Successful:", response.data);
       navigate("/homepage");
