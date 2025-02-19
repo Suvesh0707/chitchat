@@ -3,10 +3,10 @@ import dotenv from "dotenv"
 import { connectDB } from "./db/index.js";
 import cors from "cors"
 import cookieParser from "cookie-parser";
+import { app, server } from "./socket/socket.js";
 
 dotenv.config()
 
-const app = express();
 const port = process.env.PORT || 8000;
 
 app.use(express.urlencoded({ extended: true })); 
@@ -33,6 +33,6 @@ app.use("/api/v1/usersidebar", userSideBar);
 
 connectDB()
 
-app.listen(port, ()=>{
+server.listen(port, ()=>{
     console.log(`App is listening on port:${port}`)
 })

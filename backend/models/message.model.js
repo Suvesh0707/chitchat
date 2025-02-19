@@ -12,7 +12,11 @@ const messageSchema = new Schema(
         },
         message:{
             type: String,
-        },          
+        },   
+        image: {
+            type: String, 
+            default: null,
+        },       
     },
     {timestamps: true})
 
