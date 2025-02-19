@@ -22,7 +22,11 @@ const userSchema = new Schema({
     },
     isVerified:{
         type:Boolean,
-    }
+    },
+    avatar:{
+        type: String,
+        required : true,
+    },
 },{
     timestamps: true
 })

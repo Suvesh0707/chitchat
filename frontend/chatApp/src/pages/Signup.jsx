@@ -1,26 +1,40 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link , useNavigate} from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
 
 function Signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate()// added useNavigate from react-router-dom to handle redirection after successful signup.
+  const [avatar, setAvatar] = useState(null);
+  const [preview, setPreview] = useState(null);
+  
+  const navigate = useNavigate();
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAvatar(file);
+      setPreview(URL.createObjectURL(file)); // Show preview before upload
+    }
+  };
 
   const submit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3000/api/v1/register", {
-        username,
-        email,
-        password
-      }, {
+      const formData = new FormData();
+      formData.append("username", username);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("avatar", avatar); // Append image file
+
+      const response = await axios.post("http://localhost:3000/api/v1/register", formData, {
         withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" }, // Important for file upload
       });
+
       console.log("Signup Successful:", response.data);
-      navigate("/homepage") // After a successful signup, the user is redirected to the homepage using navigate('/').
+      navigate("/homepage");
     } catch (error) {
       console.error("Signup Error:", error.response ? error.response.data : error.message);
     }
@@ -38,7 +52,7 @@ function Signup() {
               className="w-full mt-1 p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
               value={username} 
               onChange={(e) => setUsername(e.target.value)}
-              placeholder='Username'
+              placeholder="Username"
               required 
             />
           </div>
@@ -49,7 +63,7 @@ function Signup() {
               className="w-full mt-1 p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
               value={email} 
               onChange={(e) => setEmail(e.target.value)}
-              placeholder='Email'
+              placeholder="Email"
               required 
             />
           </div>
@@ -60,9 +74,22 @@ function Signup() {
               className="w-full mt-1 p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
               value={password} 
               onChange={(e) => setPassword(e.target.value)}
-              placeholder='Password'
+              placeholder="Password"
               required 
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Profile Picture</label>
+            <input 
+              type="file" 
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full mt-1 p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none"
+              required
+            />
+            {preview && (
+              <img src={preview} alt="Avatar Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />
+            )}
           </div>
           <button 
             type="submit" 
