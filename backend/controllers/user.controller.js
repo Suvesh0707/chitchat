@@ -20,7 +20,6 @@ export const registerUser = async (req, res) => {
         if (!avatarLocalPath) {
             return res.status(400).json({ message: "Avatar is required" });
         }
-        console.log("Uploaded Files:", req.files);
 
         const avatar = await uploadOnCloudinary(avatarLocalPath);
         if (!avatar) {

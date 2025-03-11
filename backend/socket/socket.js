@@ -14,7 +14,6 @@ const io = new Server(server,{
 });
 
 
-
 io.on('connection',(socket)=>{
     console.log("a user connected",socket.id)
 
@@ -24,9 +23,16 @@ io.on('connection',(socket)=>{
     });
 
     socket.on("send_message", (message) => {
-        console.log("New message:", message);
-        io.to(message.receiverId).emit("receive_message", message); // Send only to receiver
+        console.log("Received message:", message);
+    
+        if (!message || !message.receiverId) {
+            console.error("Error: Invalid message object received", message);
+            return; // Stop execution if message is invalid
+        }
+    
+        io.to(message.receiverId).emit("receive_message", message);
     });
+    
 
     socket.on("disconnect",()=>{
         console.log("user disconnected", socket.id)

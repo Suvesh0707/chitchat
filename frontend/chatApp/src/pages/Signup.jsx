@@ -26,11 +26,11 @@ function Signup() {
       formData.append("username", username);
       formData.append("email", email);
       formData.append("password", password);
-      formData.append("avatar", avatar); // Append image file
+      formData.append("avatar", avatar); 
 
       const response = await axios.post("http://localhost:3000/api/v1/register", formData, {
         withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" }, // Important for file upload
+        headers: { "Content-Type": "multipart/form-data" }, 
       });
 
       console.log("Signup Successful:", response.data);

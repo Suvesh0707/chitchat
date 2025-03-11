@@ -4,11 +4,14 @@ import { connectDB } from "./db/index.js";
 import cors from "cors"
 import cookieParser from "cookie-parser";
 import { app, server } from "./socket/socket.js";
+import path from "path";
 
 dotenv.config()
 
 const port = process.env.PORT || 8000;
 
+const _dirname = path.resolve();
+// middleware
 app.use(express.urlencoded({ extended: true })); 
 app.use(express.json());
 app.use(cors({
@@ -29,7 +32,10 @@ app.use("/api/v1", userRoutes);
 app.use("/api/v1/messages", messageRoutes);
 app.use("/api/v1/usersidebar", userSideBar);
 
-
+app.use(express.static(path.join(_dirname, 'frontend', 'chatApp', 'dist')))
+app.get('*', (_, res) => {
+    res.sendFile(path.resolve(_dirname, 'frontend', 'chatApp', 'dist', 'index.html'))
+})
 
 connectDB()
 
