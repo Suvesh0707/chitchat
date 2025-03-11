@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import { FaPaperclip } from "react-icons/fa";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:3000", { transports: ["websocket"], autoConnect: false });
+const socket = io("https://chitchat-bwfh.onrender.com", { transports: ["websocket"], autoConnect: false });
 
 function Chat() {
     const [users, setUsers] = useState([]);
@@ -29,7 +29,7 @@ function Chat() {
     }, [messages]);
 
     useEffect(() => {
-        axios.get("http://localhost:3000/api/v1/currentuser", { withCredentials: true })
+        axios.get("https://chitchat-bwfh.onrender.com/api/v1/currentuser", { withCredentials: true })
             .then(response => {
                 setCurrentUserId(response.data?.userId || null);
                 socket.connect();
@@ -39,7 +39,7 @@ function Chat() {
 
 
     useEffect(() => {
-        axios.get("http://localhost:3000/api/v1/usersidebar", { withCredentials: true })
+        axios.get("https://chitchat-bwfh.onrender.com/api/v1/usersidebar", { withCredentials: true })
             .then(response => {
                 setUsers(response.data.users);
                 setLoading(false);
@@ -53,7 +53,7 @@ function Chat() {
     useEffect(() => {
         if (selectedUser) {
             setLoadingMessages(true);
-            axios.get(`http://localhost:3000/api/v1/messages/${selectedUser}`, { withCredentials: true })
+            axios.get(`https://chitchat-bwfh.onrender.com/api/v1/messages/${selectedUser}`, { withCredentials: true })
                 .then(response => setMessages(Array.isArray(response.data) ? response.data : []))
                 .catch(error => {
                     console.error("Error fetching messages:", error);
@@ -89,7 +89,7 @@ function Chat() {
 
         try {
             const response = await axios.post(
-                `http://localhost:3000/api/v1/messages/send/${selectedUser}`,
+                `https://chitchat-bwfh.onrender.com/api/v1/messages/send/${selectedUser}`,
                 formData,
                 { withCredentials: true, headers: { "Content-Type": "multipart/form-data" } }
             );

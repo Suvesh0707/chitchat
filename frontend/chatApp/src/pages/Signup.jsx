@@ -28,7 +28,7 @@ function Signup() {
       formData.append("password", password);
       formData.append("avatar", avatar); 
 
-      const response = await axios.post("http://localhost:3000/api/v1/register", formData, {
+      const response = await axios.post("https://chitchat-bwfh.onrender.com/api/v1/register", formData, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" }, 
       });

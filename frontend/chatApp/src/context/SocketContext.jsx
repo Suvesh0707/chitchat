@@ -11,7 +11,7 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:3000", { withCredentials: true });
+    const newSocket = io("https://chitchat-bwfh.onrender.com", { withCredentials: true });
     setSocket(newSocket);
 
     return () => {

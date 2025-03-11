@@ -15,7 +15,7 @@ const _dirname = path.resolve();
 app.use(express.urlencoded({ extended: true })); 
 app.use(express.json());
 app.use(cors({
-    origin: "http://localhost:5173", 
+    origin: "https://chitchat-bwfh.onrender.com", 
     credentials: true,
 }));
 app.use(cookieParser())

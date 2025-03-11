@@ -9,7 +9,7 @@ function Homepage() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get("http://localhost:3000/api/v1/getavatar", {
+                const response = await axios.get("https://chitchat-bwfh.onrender.com/api/v1/getavatar", {
                     withCredentials: true,
                 });
                 console.log(response);
